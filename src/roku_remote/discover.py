@@ -3,18 +3,18 @@
 import asyncio
 import logging
 import socket
-import click
 from threading import Thread
 
+import click
 import ssdp
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 @click.command(context_settings=CONTEXT_SETTINGS, options_metavar="<options>")
-@click.option("--log-level", help="Log level (default: debug)", type=click.Choice(["debug", "info", "error"]), default="error")
+@click.option("--log-level", help="Log level (default: debug)", type=click.Choice(["debug", "info", "error"]), default="info")
 @click.option("--timeout", help="length of time in seconds to keep listening for devices, default 60s", type=click.INT, default=60)
 @click.option("--scope", help="defines the scope of the disovery", type=click.STRING, default="ssdp:all")
 
-def main(timeout, scope, log_level):
+def main(scope, timeout, log_level):
     """unit test for discovery.
     Discovers all devices, waits for thread to terminate
     """
@@ -26,20 +26,19 @@ def main(timeout, scope, log_level):
     elif log_level == "error":
         level = logging.ERROR
 
-    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=level)
+    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO)
     logger.info("discovering ...")
     discover(scope, SSDP_ProtocolHandler.default_client_callback, False, timeout).join()
 
 
-
-logger = logging.getLogger("main.discovery")
+logger = logging.getLogger("discover")
 
 class SSDP_ProtocolHandler(ssdp.SimpleServiceDiscoveryProtocol):
     """Protocol to handle responses and requests."""
 
     def default_client_callback(self, header_dict):
         """default callback for unit testing"""
-        logger.debug(f"in default client callback {header_dict}")
+        logger.info(f"discovered: {header_dict}")
 
     callback = None
 
