@@ -1,6 +1,9 @@
 import logging
+import os
+import re
 import tkinter as tk
 import tkinter.ttk as ttk
+from fnmatch import fnmatch
 from queue import Queue
 
 import Pmw
@@ -42,9 +45,14 @@ class App:
 
         self.window.bind(self.REGSITER_ROKU_EVENT, self.register_roku)
         self.window.after(App.DISCOVER_INTERVAL, self.discover)
+        self.window.bind('<KeyPress>', self.on_key_press)
         self.device_combobox.bind(self.COMBOBOX_SELECTED_EVENT, self.device_selection_changed)
         self.input_combobox.bind(self.COMBOBOX_SELECTED_EVENT, self.input_selection_changed)
 
+    def on_key_press(self, event):
+        logger.debug(f"on_key_press code:{event.keycode}: code.hex:{event.keycode:02x} char:{event.char}")
+        if self.roku:
+            self.roku.send_char(event.char, event.keysym)
 
     def register_roku(self, event):
         """called by the Tk.mainloop when a REGISTER_ROKU_EVENT has been posted from the discovery thread
@@ -133,6 +141,7 @@ class App:
                     self.roku.send_key_input_tuner()
                 case "AV-1":
                     self.roku.send_key_input_av1()
+        self.window.focus_set()
         
 
     def device_selection_changed(self, event):
@@ -142,18 +151,31 @@ class App:
             if roku.get_name() == selection:
                 self.roku = roku
                 self.update_power_button_state(True)
+        self.window.focus_set()
 
     def reset_combobox(self):
         self.device_combobox['values'] = ("discovering...",)
         self.device_combobox.current(0)
 
+    def _assemble_settables(self):
+        settables = self.window.winfo_children()
+        for w in settables:
+            settables += w.winfo_children()
+        return filter(lambda w: w.__class__.__name__ in ['Canvas', 'Combobox'], settables)
+
     def _disable_widgets(self):
-        for widget in self.window.winfo_children():
-            widget["state"] = tk.DISABLED
+        for widget in self._assemble_settables():
+            try:
+                widget["state"] = tk.DISABLED
+            except:
+                pass
 
     def _enable_widgets(self):
-        for widget in self.window.winfo_children():
-            widget["state"] = tk.NORMAL
+        for widget in self._assemble_settables():
+            try:
+                widget["state"] = 'readonly'
+            except:
+                pass
 
     def _create_widgets(self):
         """creates all the UI widgets"""
@@ -167,32 +189,32 @@ class App:
         self.reset_combobox()
 
         # Buttons: each button is a clickable image with alpha-channel laying on a canvas
-        self.power_btn          = App.PowerButton(self.window, "power", f"{self.image_path}/power_red.png", lambda event: self.btn_clicked(self.power_button), 50, 50, f"{self.image_path}/power_green.png")
-        self.discover_btn       = App.Button(self.window, "discover", f"{self.image_path}/discover.png", lambda event: self.discover(False, True), 50, 50)
+        self.power_btn          = App.PowerButton(self, self.window, "power", f"{self.image_path}/power_red.png", lambda event: self.btn_clicked(self.power_button), 50, 50, f"{self.image_path}/power_green.png")
+        self.discover_btn       = App.Button(self, self.window, "discover", f"{self.image_path}/discover.png", lambda event: self.discover(False, True), 50, 50)
 
-        self.back_btn           = App.Button(self.window, "back", f"{self.image_path}/back.png", lambda event: self.btn_clicked(self.roku.send_key_back), 75, 50)
-        self.guide_btn          = App.Button(self.window, "guide", f"{self.image_path}/guide.png", lambda event: self.btn_clicked(self.roku.send_key_guide), 75, 50)
-        self.home_btn           = App.Button(self.window, "home", f"{self.image_path}/home.png", lambda event: self.btn_clicked(self.roku.send_key_home), 75, 50)
+        self.back_btn           = App.Button(self, self.window, "back", f"{self.image_path}/back.png", lambda event: self.btn_clicked(self.roku.send_key_back), 75, 50)
+        self.guide_btn          = App.Button(self, self.window, "guide", f"{self.image_path}/guide.png", lambda event: self.btn_clicked(self.roku.send_key_guide), 75, 50)
+        self.home_btn           = App.Button(self, self.window, "home", f"{self.image_path}/home.png", lambda event: self.btn_clicked(self.roku.send_key_home), 75, 50)
 
-        self.rocker_nw          = App.Button(self.window, "", f"{self.image_path}/rocker_nw.png", None, 78, 78)
-        self.up_btn             = App.Button(self.window, "up", f"{self.image_path}/rocker_up.png", lambda event: self.btn_clicked(self.roku.send_key_up), 78, 78)
-        self.rocker_ne          = App.Button(self.window, "", f"{self.image_path}/rocker_ne.png", None, 78, 78)
-        self.left_btn           = App.Button(self.window, "left", f"{self.image_path}/rocker_left.png", lambda event: self.btn_clicked(self.roku.send_key_left), 78, 78)
-        self.select_btn         = App.Button(self.window, "select", f"{self.image_path}/rocker_center.png", lambda event: self.btn_clicked(self.roku.send_key_select), 78, 78)
-        self.right_btn          = App.Button(self.window, "right", f"{self.image_path}/rocker_right.png", lambda event: self.btn_clicked(self.roku.send_key_right), 78, 78)
-        self.rocker_sw          = App.Button(self.window, "", f"{self.image_path}/rocker_sw.png", None, 78, 78)
-        self.down_btn           = App.Button(self.window, "down", f"{self.image_path}/rocker_down.png", lambda event: self.btn_clicked(self.roku.send_key_down), 78, 78)
-        self.rocker_se          = App.Button(self.window, "", f"{self.image_path}/rocker_se.png", None, 78, 78)
+        self.rocker_nw          = App.Button(self, self.window, None, f"{self.image_path}/rocker_nw.png", None, 78, 78)
+        self.up_btn             = App.Button(self, self.window, "up", f"{self.image_path}/rocker_up.png", lambda event: self.btn_clicked(self.roku.send_key_up), 78, 78)
+        self.rocker_ne          = App.Button(self, self.window, None, f"{self.image_path}/rocker_ne.png", None, 78, 78)
+        self.left_btn           = App.Button(self, self.window, "left", f"{self.image_path}/rocker_left.png", lambda event: self.btn_clicked(self.roku.send_key_left), 78, 78)
+        self.select_btn         = App.Button(self, self.window, "select", f"{self.image_path}/rocker_center.png", lambda event: self.btn_clicked(self.roku.send_key_select), 78, 78)
+        self.right_btn          = App.Button(self, self.window, "right", f"{self.image_path}/rocker_right.png", lambda event: self.btn_clicked(self.roku.send_key_right), 78, 78)
+        self.rocker_sw          = App.Button(self, self.window, None, f"{self.image_path}/rocker_sw.png", None, 78, 78)
+        self.down_btn           = App.Button(self, self.window, "down", f"{self.image_path}/rocker_down.png", lambda event: self.btn_clicked(self.roku.send_key_down), 78, 78)
+        self.rocker_se          = App.Button(self, self.window, None, f"{self.image_path}/rocker_se.png", None, 78, 78)
 
-        self.instant_replay_btn = App.Button(self.window, "instant replay", f"{self.image_path}/instant_replay.png", lambda event: self.btn_clicked(self.roku.send_key_instant_replay), 75, 50)
-        self.info_btn           = App.Button(self.window, "info", f"{self.image_path}/info.png", lambda event: self.btn_clicked(self.roku.send_key_info), 75, 50)
-        self.headphones_btn     = App.Button(self.window, "headphones", f"{self.image_path}/headphones.png", lambda event: self.btn_clicked(self.roku.send_key_headphones), 75, 50)
-        self.rev_btn            = App.Button(self.window, "rewind", f"{self.image_path}/rev.png", lambda event: self.btn_clicked(self.roku.send_key_rev), 75, 50)
-        self.play_btn           = App.Button(self.window, "play/pause", f"{self.image_path}/play.png", lambda event: self.btn_clicked(self.roku.send_key_play), 75, 50)
-        self.fwd_btn            = App.Button(self.window, "forward", f"{self.image_path}/forward.png", lambda event: self.btn_clicked(self.roku.send_key_fwd), 75, 50)
-        self.volume_up_btn      = App.Button(self.window, "volume up", f"{self.image_path}/volume_up.png", lambda event: self.btn_clicked(self.roku.send_key_volume_up), 75, 50)
-        self.volume_down_btn    = App.Button(self.window, "volume down", f"{self.image_path}/volume_down.png", lambda event: self.btn_clicked(self.roku.send_key_volume_down), 75, 50)
-        self.volume_mute_btn    = App.Button(self.window, "volume mute", f"{self.image_path}/volume_mute.png", lambda event: self.btn_clicked(self.roku.send_key_volume_mute), 75, 50)
+        self.instant_replay_btn = App.Button(self, self.window, "instant replay", f"{self.image_path}/instant_replay.png", lambda event: self.btn_clicked(self.roku.send_key_instant_replay), 75, 50)
+        self.info_btn           = App.Button(self, self.window, "info", f"{self.image_path}/info.png", lambda event: self.btn_clicked(self.roku.send_key_info), 75, 50)
+        self.headphones_btn     = App.Button(self, self.window, "headphones", f"{self.image_path}/headphones.png", lambda event: self.btn_clicked(self.roku.send_key_headphones), 75, 50)
+        self.rev_btn            = App.Button(self, self.window, "rewind", f"{self.image_path}/rev.png", lambda event: self.btn_clicked(self.roku.send_key_rev), 75, 50)
+        self.play_btn           = App.Button(self, self.window, "play/pause", f"{self.image_path}/play.png", lambda event: self.btn_clicked(self.roku.send_key_play), 75, 50)
+        self.fwd_btn            = App.Button(self, self.window, "forward", f"{self.image_path}/forward.png", lambda event: self.btn_clicked(self.roku.send_key_fwd), 75, 50)
+        self.volume_up_btn      = App.Button(self, self.window, "volume up", f"{self.image_path}/volume_up.png", lambda event: self.btn_clicked(self.roku.send_key_volume_up), 75, 50)
+        self.volume_down_btn    = App.Button(self, self.window, "volume down", f"{self.image_path}/volume_down.png", lambda event: self.btn_clicked(self.roku.send_key_volume_down), 75, 50)
+        self.volume_mute_btn    = App.Button(self, self.window, "volume mute", f"{self.image_path}/volume_mute.png", lambda event: self.btn_clicked(self.roku.send_key_volume_mute), 75, 50)
 
         self.input_combobox = ttk.Combobox(state="readonly", width=7)
         balloon = Pmw.Balloon(self.input_combobox)
@@ -201,12 +223,26 @@ class App:
         self.input_combobox['values'] = ("input","HDMI-1","HDMI-2","HDMI-3","HDMI-4","Tuner","AV-1")
         self.input_combobox.current(0)
 
+        self.channel_frame = App.ScrollableFrame(self.window, 225, 50)
+
+        self.channel_buttons = []
+        for r, d, files in os.walk(self.image_path):
+            for f in files:
+                if fnmatch(f, "*.jpeg"):
+                    path = os.path.join(r, f)
+                    channel_id = re.search(r'\d+', f).group()
+                    button = App.Button(self, self.channel_frame.scrollable_frame, channel_id, path, None, 75, 50)
+                    self.channel_buttons.append(button)
+        self.channel_buttons.sort(key=lambda button: int(button.name), reverse=False)
+        pass
+
     def _layout_widgets(self):
         """lays out all the widgets in a 3 column, multirow grid"""
         # Use grid to layout widgets
         self.device_combobox            .grid(row=0, columnspan=3, padx=0, pady=10)
 
         self.power_btn.canvas           .grid(row=1, column=0, padx=0, pady=10)#, stick=tk.NSEW)
+        self.input_combobox             .grid(row=1, column=1, padx=0, pady=10)
         self.discover_btn.canvas        .grid(row=1, column=2, padx=0, pady=10)#, stick=tk.NSEW)
 
         self.back_btn.canvas            .grid(row=2, column=0, padx=5, pady=10, stick=tk.NSEW)
@@ -237,7 +273,12 @@ class App:
         self.volume_down_btn.canvas     .grid(row=8, column=1, padx=0, pady=10, stick=tk.NSEW)
         self.volume_up_btn.canvas       .grid(row=8, column=2, padx=5, pady=10, stick=tk.NSEW)
 
-        self.input_combobox            .grid(row=9, columnspan=3, padx=0, pady=10)
+        self.channel_frame              .grid(row=9, columnspan=3, padx=0, pady=10)
+        i = 0
+        for button in self.channel_buttons:
+            button.canvas.grid(row=0, column=i)
+            i += 1
+
 
     def btn_clicked(self, obj):
         """handles button clicks by either delegating to the button object's
@@ -257,22 +298,44 @@ class App:
 
     class Button():
         """helper class to build button widgets based on canvases and images"""
-        def __init__(self, window, name, image_path, onclick, x, y, alt_image_path=None):
+        def __init__(self, app, window, name, image_path, onclick, x, y, alt_image_path=None):
+            self.app = app
             self.name = name
             self.canvas = tk.Canvas(window, width=x, height=y, bd=0, borderwidth=0, highlightthickness=0, bg=App.bgcolor)
             self.img = ImageTk.PhotoImage(Image.open(image_path).resize((x,y)))
             if alt_image_path is not None:
                 self.alt_img = ImageTk.PhotoImage(Image.open(alt_image_path).resize((x,y)))
             self.btn_img = self.canvas.create_image(self.canvas.winfo_reqwidth()/2, self.canvas.winfo_reqheight()/2, anchor=tk.CENTER, image=self.img)
-            if onclick is not None:
+            if name is not None:
                 balloon = Pmw.Balloon(self.canvas)
                 balloon.bind(self.canvas, name)
                 balloon.configure(relmouse="both")
+            if onclick is not None:
                 self.onclick = onclick
                 self.canvas.tag_bind(self.btn_img, "<Button-1>", self.onclick)
+            else:
+                if name is not None:
+                    self.canvas.tag_bind(self.btn_img, "<Button-1>", self.btn_clicked)
+        
+        def btn_clicked(self, ev):
+            logger.debug(f"Button.btn_clicked {self.name}")
+            self.app.roku.send_launch_channel(self.name)
 
     class PowerButton(Button):
         """PowerButton subclass of Button to handle special case of changing image when power state changes"""
         def set_power(self, power):
             self.btn_img = self.canvas.create_image(self.canvas.winfo_reqwidth()/2, self.canvas.winfo_reqheight()/2, anchor=tk.CENTER, image=self.alt_img if power else self.img)
             self.canvas.tag_bind(self.btn_img, "<Button-1>", self.onclick)
+
+    class ScrollableFrame(ttk.Frame):
+        def __init__(self, container, width, height, *args, **kwargs):
+            super().__init__(container, *args, **kwargs)
+            canvas = tk.Canvas(self, width=width, height=height)
+            scrollbar = ttk.Scrollbar(self, orient="horizontal", command=canvas.xview)
+            self.scrollable_frame = ttk.Frame(canvas)
+
+            self.scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+            canvas.create_window((0,0), window=self.scrollable_frame, anchor="nw")
+            canvas.configure(xscrollcommand=scrollbar.set)
+            canvas.grid(row=0, column=0)
+            scrollbar.grid(row=1, column=0, sticky=tk.NSEW)

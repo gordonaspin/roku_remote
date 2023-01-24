@@ -1,5 +1,6 @@
 import requests
-from urllib.parse import *
+from urllib.parse import urlparse, quote
+
 from lxml import objectify
 import logging
 from strenum import StrEnum
@@ -45,28 +46,31 @@ class Roku:
 
     def log_response(self, method, roku, url, status_code, text):
         if not (status_code == 200 or status_code == 202):
-            logger.error(f"error in {method} roke {roku} url {url} status {status_code} {text}")
+            logger.error(f"error in {method} roku {roku} url {url} status {status_code} {text}")
         else:
             logger.info(f"{method} roku {roku} url {url} status {status_code} {text}")
 
     # actions
-    keypress = "keypress"
     def send_keypress(self, key):
-        url = self.api_url + self.keypress + "/" + key
+        url = self.api_url + "keypress/" + key
         response = requests.post(url)
         self.log_response("send_keypress", self.name, url, response.status_code, response.text)
 
-    keydown = "keydown"
     def send_keydown(self, key):
-        url = self.api_url + self.keydown + "/" + key
+        url = self.api_url + "keydown/" + key
         response = requests.post(url)
         self.log_response("send_keydown", self.name, url, response.status_code, response.text)
 
     keyup = "keyup"
     def send_keyup(self, key):
-        url = self.api_url + self.keyup + "/" + key
+        url = self.api_url + "keyup/" + key
         response = requests.post(url)
         self.log_response("send_keyup", self.name, url, response.status_code, response.text)
+
+    def send_launch_channel(self, id):
+        url = self.api_url + "launch" + "/" + id
+        response = requests.post(url)
+        self.log_response("launch", self.name, url, response.status_code, response.text)
 
     # key actions
     def send_power_on(self):
@@ -115,7 +119,7 @@ class Roku:
         self.send_keypress(Roku.Key.info)
 
     def send_key_backspace(self):
-        self.send_keypress(self.keykey_backspace_right)
+        self.send_keypress(Roku.Key.backspace)
 
     def send_key_search(self):
         self.send_keypress(Roku.Key.search)
@@ -164,6 +168,36 @@ class Roku:
             self.send_power_off()
         else:
             self.send_power_on()
+
+    def send_char(self, char, keysym):
+        if len(char):
+            if char in "@#$&+=:;,?/ ":
+                char = quote(char, safe="")
+                self.send_keypress(f"Lit_{char}")
+                return
+            if char.isprintable():
+                self.send_keypress(f"Lit_{char}")
+                return
+
+        match keysym:
+            case 'BackSpace':
+                self.send_key_backspace()
+            case 'Delete':
+                self.send_key_backspace()
+            case 'Up':
+                self.send_key_up()
+            case 'Down':
+                self.send_key_down()
+            case 'Left':
+                self.send_key_left()
+            case 'Right':
+                self.send_key_right()
+            case 'Home' | 'Escape':
+                self.send_key_home()
+            case 'Pause':
+                self.send_key_play()
+            case 'Return':
+                self.send_key_select()
 
     # utilities
     def is_power_on(self):
