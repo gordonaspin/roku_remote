@@ -216,7 +216,7 @@ class App:
         self.volume_down_btn    = App.Button(self, self.window, "volume down", f"{self.image_path}/volume_down.png", lambda event: self.btn_clicked(self.roku.send_key_volume_down), 75, 50)
         self.volume_mute_btn    = App.Button(self, self.window, "volume mute", f"{self.image_path}/volume_mute.png", lambda event: self.btn_clicked(self.roku.send_key_volume_mute), 75, 50)
 
-        self.input_combobox = ttk.Combobox(state="readonly", width=7)
+        self.input_combobox = ttk.Combobox(state="readonly", width=5)
         balloon = Pmw.Balloon(self.input_combobox)
         balloon.bind(self.device_combobox, "select input")
         balloon.configure(relmouse="both")
