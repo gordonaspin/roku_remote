@@ -42,7 +42,8 @@ class App:
 
         self.window.bind(self.REGSITER_ROKU_EVENT, self.register_roku)
         self.window.after(App.DISCOVER_INTERVAL, self.discover)
-        self.device_combobox.bind(self.COMBOBOX_SELECTED_EVENT, self.selection_changed)
+        self.device_combobox.bind(self.COMBOBOX_SELECTED_EVENT, self.device_selection_changed)
+        self.input_combobox.bind(self.COMBOBOX_SELECTED_EVENT, self.input_selection_changed)
 
 
     def register_roku(self, event):
@@ -68,7 +69,7 @@ class App:
         if current == -1:
             self._enable_widgets()
             self.device_combobox.current(0)
-            self.selection_changed(event)
+            self.device_selection_changed(event)
             self.window.after(App.POWER_UPDATE_INTERVAL, self.update_power_button_state)
 
     def register_device(self, dict):
@@ -106,7 +107,7 @@ class App:
         """starts a discovery thread when the user clicks the discover button or upon
         an exception getting power button state """
         if force:
-            self.rokus = []
+            self.rokus.clear()
             self.roku = None
             self.reset_combobox()
             self._disable_widgets()
@@ -115,8 +116,26 @@ class App:
         if user_action == False:
             self.window.after(App.DISCOVER_INTERVAL, self.discover)
 
+    def input_selection_changed(self, event):
+        """event handler when user selects new input from combobox"""
+        selection = self.input_combobox.get()
+        if self.roku is not None:
+            match selection:
+                case "HDMI-1":
+                    self.roku.send_key_input_hdmi1()
+                case "HDMI-2":
+                    self.roku.send_key_input_hdmi2()
+                case "HDMI-3":
+                    self.roku.send_key_input_hdmi3()
+                case "HDMI-4":
+                    self.roku.send_key_input_hdmi4()
+                case "Tuner":
+                    self.roku.send_key_input_tuner()
+                case "AV-1":
+                    self.roku.send_key_input_av1()
+        
 
-    def selection_changed(self, event):
+    def device_selection_changed(self, event):
         """event handler when user selects new device from combobox"""
         selection = self.device_combobox.get()
         for roku in self.rokus:
@@ -140,7 +159,7 @@ class App:
         """creates all the UI widgets"""
         # Combobox
         style = ttk.Style()
-        style.configure("TCombobox", fieldbackground=self.bgcolor, background=self.bgcolor)
+        style.configure("TCombobox", fieldbackground=self.bgcolor, background=self.bgcolor, foreground="white")
         self.device_combobox = ttk.Combobox(state="readonly")
         balloon = Pmw.Balloon(self.device_combobox)
         balloon.bind(self.device_combobox, "choose device")
@@ -174,6 +193,13 @@ class App:
         self.volume_up_btn      = App.Button(self.window, "volume up", f"{self.image_path}/volume_up.png", lambda event: self.btn_clicked(self.roku.send_key_volume_up), 75, 50)
         self.volume_down_btn    = App.Button(self.window, "volume down", f"{self.image_path}/volume_down.png", lambda event: self.btn_clicked(self.roku.send_key_volume_down), 75, 50)
         self.volume_mute_btn    = App.Button(self.window, "volume mute", f"{self.image_path}/volume_mute.png", lambda event: self.btn_clicked(self.roku.send_key_volume_mute), 75, 50)
+
+        self.input_combobox = ttk.Combobox(state="readonly", width=7)
+        balloon = Pmw.Balloon(self.input_combobox)
+        balloon.bind(self.device_combobox, "select input")
+        balloon.configure(relmouse="both")
+        self.input_combobox['values'] = ("input","HDMI-1","HDMI-2","HDMI-3","HDMI-4","Tuner","AV-1")
+        self.input_combobox.current(0)
 
     def _layout_widgets(self):
         """lays out all the widgets in a 3 column, multirow grid"""
@@ -210,6 +236,8 @@ class App:
         self.volume_mute_btn.canvas     .grid(row=8, column=0, padx=5, pady=10, stick=tk.NSEW)
         self.volume_down_btn.canvas     .grid(row=8, column=1, padx=0, pady=10, stick=tk.NSEW)
         self.volume_up_btn.canvas       .grid(row=8, column=2, padx=5, pady=10, stick=tk.NSEW)
+
+        self.input_combobox            .grid(row=9, columnspan=3, padx=0, pady=10)
 
     def btn_clicked(self, obj):
         """handles button clicks by either delegating to the button object's
