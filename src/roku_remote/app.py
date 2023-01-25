@@ -19,7 +19,8 @@ logger = logging.getLogger("main.app")
 class App:
     REGSITER_ROKU_EVENT = "<<RegisterRoku>>"
     COMBOBOX_SELECTED_EVENT = "<<ComboboxSelected>>"
-    bgcolor = "#521c86" #"#662d91"
+    bgcolor = "#521c86"
+    troughcolor = "#662d91"
     DISCOVER_INTERVAL = 5*60*1000
     POWER_UPDATE_INTERVAL = 10*1000
     activebgcolor = bgcolor
@@ -180,8 +181,23 @@ class App:
     def _create_widgets(self):
         """creates all the UI widgets"""
         # Combobox
+
+        self.window.option_add("*TCombobox*Listbox.background", App.bgcolor)
+        self.window.option_add("*TCombobox*Listbox.foreground", 'white')
+        self.window.option_add("*TCombobox*Listbox.selectBackground", App.bgcolor)
+        self.window.option_add("*TCombobox*Listbox.selectForeground", 'white')
+
         style = ttk.Style()
-        style.configure("TCombobox", fieldbackground=self.bgcolor, background=self.bgcolor, foreground="white")
+        style.configure("TCombobox", arrowcolor='white', background=App.bgcolor, foreground='white', fieldbackground=App.bgcolor, selectbackground=App.bgcolor, selectforeground="white")
+        if True:
+            for state in ['readonly', 'disabled', 'active', 'focus', 'invalid', 'pressed', 'selected']:
+                style.map('TCombobox', arrowcolor=[(state, 'white')])
+                style.map('TCombobox', background=[(state, App.bgcolor)])
+                style.map('TCombobox', foreground=[(state, 'white')])
+                style.map('TCombobox', fieldbackground=[(state, App.bgcolor)])
+                style.map('TCombobox', selectbackground=[(state, App.bgcolor)])
+                style.map('TCombobox', selectforeground=[(state, 'white')])
+
         self.device_combobox = ttk.Combobox(state="readonly")
         balloon = Pmw.Balloon(self.device_combobox)
         balloon.bind(self.device_combobox, "choose device")
@@ -330,9 +346,11 @@ class App:
     class ScrollableFrame(ttk.Frame):
         def __init__(self, container, width, height, *args, **kwargs):
             super().__init__(container, *args, **kwargs)
-            canvas = tk.Canvas(self, width=width, height=height)
+            canvas = tk.Canvas(self, width=width, height=height, borderwidth=0, highlightthickness=0)
+            style=ttk.Style()
+            style.configure('Horizontal.TScrollbar', troughcolor=App.troughcolor, background=App.bgcolor, bordercolor=App.bgcolor, arrowcolor="white")
             scrollbar = ttk.Scrollbar(self, orient="horizontal", command=canvas.xview)
-            self.scrollable_frame = ttk.Frame(canvas)
+            self.scrollable_frame = ttk.Frame(canvas, borderwidth=0)
 
             self.scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
             canvas.create_window((0,0), window=self.scrollable_frame, anchor="nw")
