@@ -22,11 +22,10 @@ Options:
   --timeout INTEGER               length of time in seconds to keep listening
                                   for devices, default 60s
   -h, --help                      Show this message and exit.
-
-
+```
 Also part of the package is a utility called discover that performs network discovery of all
 devices that respond to the SSDP request.
-
+```
 Usage: discover
 ```
 Example output from discover:
