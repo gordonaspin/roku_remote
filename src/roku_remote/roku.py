@@ -192,8 +192,10 @@ class Roku:
                 self.send_key_left()
             case 'Right':
                 self.send_key_right()
-            case 'Home' | 'Escape':
+            case 'Home':
                 self.send_key_home()
+            case 'Escape':
+                self.send_key_back()
             case 'Pause':
                 self.send_key_play()
             case 'Return':

@@ -29,14 +29,6 @@ devices that respond to the SSDP request.
 
 Usage: discover
 ```
-The application gui will start in "discovering ..." mode. 
-After a period of time, network and device dependent, a list of Roku devices will appear.
-The power button dynamically reflects the current power state of the Roku device.
-
-![image info](./src/roku_remote/images/roku_remote.png)
-![image info](./src/roku_remote/images/roku_remote2.png)
-![image info](./src/roku_remote/images/roku_remote3.png)
-
 To build the application:
 ```
 python -m build
@@ -49,6 +41,13 @@ or to install as editable
 ```
 pip install -e .
 ```
+The application gui will start in "discovering ..." mode. 
+After a period of time, network and device dependent, a list of Roku devices will appear.
+The power button dynamically reflects the current power state of the Roku device. During initial discovery and re-discovery on a communication execption, the user-interface controls are disabled. Under a periodic (re)-discovery (every App.DISCOVER_INTERVAL - 5 minutes) the user interface controls remain enabled. The discover button will start a discovery thread unless one is already running. The currently selected Roku's power state is refreshed every App.POWER_UPDATE_INTERVAL (10 seconds).
+
+![image info](./src/roku_remote/images/roku_remote.png)
+![image info](./src/roku_remote/images/roku_remote2.png)
+![image info](./src/roku_remote/images/roku_remote3.png)
 
 # Keyboard Guide
 The user interface has keyboard support, so you can type in search fields etc. Other keys with functions are:
@@ -61,8 +60,8 @@ The user interface has keyboard support, so you can type in search fields etc. O
 | Cursor Right 	| Right         	|
 | Cursor Left  	| Left          	|
 | Pause        	| Play/Pause    	|
-| Home         	| Home/Back     	|
-| Escape       	| Home/Back     	|
+| Home         	| Home          	|
+| Escape       	| Back          	|
 | Return       	| Select        	|
 
 # Channel Ribbon
@@ -79,6 +78,8 @@ do
     fi
 done
 ~~~
+The channel ribbon is created with the src/roku_remote/images/\*.jpeg files. You can remove chan\<id\>.jpeg images from the src/roku_remote/images/ folder that you don't want and they will no longer appear in the ribbon when it gets created.
+Similarly, you can add your own chan\<id\>.jpeg image for a channel that you are aware of.
 Here's a table of all the channel ids I know:
 | Channel ID 	| Name    | Image  |
 |------------	| ------  | ------ |
@@ -143,3 +144,26 @@ Here's a table of all the channel ids I know:
 | 659410          | Launcher | <img src="src/roku_remote/images/chan659410.jpeg" width="75">|
 | 680626          | Dynamic | <img src="src/roku_remote/images/chan680626.jpeg" width="75">|
  
+# User Interface Controls:
+| Button | Function |
+| ------ | -------- | 
+| <img src="src/roku_remote/images/power_red.png" width="50" height="50"> | Power off |
+| <img src="src/roku_remote/images/power_green.png" width="50" height="50"> | Power on |
+| <img src="src/roku_remote/images/discover.png" width="50" height="50"> | Discover devices |
+| <img src="src/roku_remote/images/back.png" width="75" height="50"> | Go back |
+| <img src="src/roku_remote/images/guide.png" width="75" height="50"> | Guide |
+| <img src="src/roku_remote/images/rocker_up.png" width="50" height="50"> | Up |
+| <img src="src/roku_remote/images/rocker_down.png" width="50" height="50"> | Down |
+| <img src="src/roku_remote/images/rocker_left.png" width="50" height="50"> | Left |
+| <img src="src/roku_remote/images/rocker_right.png" width="50" height="50"> | Right |
+| <img src="src/roku_remote/images/instant_replay.png" width="75" height="50"> | Instant Replay |
+| <img src="src/roku_remote/images/info.png" width="75" height="50"> | Info / Options |
+| <img src="src/roku_remote/images/headphones.png" width="75" height="50"> | no function as yet |
+| <img src="src/roku_remote/images/rev.png" width="75" height="50"> | Rewind |
+| <img src="src/roku_remote/images/play.png" width="75" height="50"> | Play / Pause |
+| <img src="src/roku_remote/images/forward.png" width="75" height="50"> | Fast Forward |
+| <img src="src/roku_remote/images/volume_mute.png" width="75" height="50"> | Volume Mute |
+| <img src="src/roku_remote/images/volume_down.png" width="75" height="50"> | Volume Down |
+| <img src="src/roku_remote/images/volume_up.png" width="75" height="50"> | Volume Up |
+| <img src="src/roku_remote/images/channel_ribbon.png" width="150" height="50"> | Channel Ribbon, click image of channel to open on Roku |
+

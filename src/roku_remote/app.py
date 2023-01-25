@@ -114,12 +114,12 @@ class App:
     def discover(self, force=False, user_action=False):
         """starts a discovery thread when the user clicks the discover button or upon
         an exception getting power button state """
+        logger.debug(f"discover(force={force}, user_action={user_action})")
         if force:
             self.rokus.clear()
             self.roku = None
             self.reset_combobox()
             self._disable_widgets()
-        logger.debug(f"calling discover.discover() force = {force}")
         discover("roku:ecp", self.register_device, force) 
         if user_action == False:
             self.window.after(App.DISCOVER_INTERVAL, self.discover)
