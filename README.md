@@ -87,23 +87,8 @@ The user interface has keyboard support, so you can type in search fields etc. O
 | Return       	| Select        	|
 
 # Channel Ribbon
-The channel ribbon contains images for each known channel. To select a channel to be displayed on the Roku, select it by clickig the mouse. The ribbon scrolls horizontally. I determined these by brute force requesting from my roku devices using a bash [script](./scripts/find_channels_by_brute_force.sh):
-~~~
-#!/bin/bash
-mkdir temp
-for i in {0..1000000}
-do
-    wget -q http://192.168.0.103:8060/query/icon/$i -O temp/chan$i.jpeg
-    if [ $(expr $i % 1000) == "0" ]
-    then
-        echo $i
-        find temp/ -size 0 -exec rm {} \;
-        find temp/ ! -size 0 -print
-    fi
-done
-find temp/ -size 0 -exec rm {} \;
-~~~
-The channel ribbon is created with the src/roku_remote/images/\*.jpeg files. You can remove chan\<id\>.jpeg images from the src/roku_remote/images/ folder that you don't want and they will no longer appear in the ribbon when it gets created.
+The channel ribbon contains images for each known channel. To select a channel to be displayed on the Roku, select it by clickig the mouse. The ribbon scrolls horizontally. I determined these by brute force requesting from my roku devices using a bash [script](./scripts/find_channels_by_brute_force.sh).
+The channel ribbon is created with the roku_remote/images/\*.jpeg files. You can remove chan\<id\>.jpeg images from the roku_remote/images/ folder that you don't want and they will no longer appear in the ribbon when it gets created.
 See my example [script](./scripts/remove_unwanted_channels.sh) to do that.
 Similarly, you can add your own chan\<id\>.jpeg image for a channel that you are aware of.
 Here's a table of all the channel ids I know:
