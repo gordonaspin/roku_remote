@@ -29,6 +29,29 @@ devices that respond to the SSDP request.
 
 Usage: discover
 ```
+Example output from discover:
+~~~
+$ discover 
+2023-01-25 12:55:03,876 INFO     discovering ...
+2023-01-25 12:55:03,877 INFO     discovery thread running
+2023-01-25 12:55:03,880 INFO     discovered: {'CACHE-CONTROL': 'max-age=120', 'ST': 'upnp:rootdevice', 'USN': 'uuid:67d10bb0-9729-4a3f-8bb6-c2491237430c::upnp:rootdevice', 'EXT': '', 'SERVER': 'TP-Link/TP-LINK UPnP/1.1 MiniUPnPd/1.8', 'LOCATION': 'http://192.168.0.1:1900/ejbqw/rootDesc.xml', 'OPT': '"http://schemas.upnp.org/upnp/1/0/"; ns=01', '01-NLS': '1', 'BOOTID.UPNP.ORG': '1', 'CONFIGID.UPNP.ORG': '1337'}
+2023-01-25 12:55:03,881 INFO     discovered: {'CACHE-CONTROL': 'max-age=120', 'ST': 'urn:schemas-upnp-org:device:InternetGatewayDevice:1', 'USN': 'uuid:67d10bb0-9729-4a3f-8bb6-c2491237430c::urn:schemas-upnp-org:device:InternetGatewayDevice:1', 'EXT': '', 'SERVER': 'TP-Link/TP-LINK UPnP/1.1 MiniUPnPd/1.8', 'LOCATION': 'http://192.168.0.1:1900/ejbqw/rootDesc.xml', 'OPT': '"http://schemas.upnp.org/upnp/1/0/"; ns=01', '01-NLS': '1', 'BOOTID.UPNP.ORG': '1', 'CONFIGID.UPNP.ORG': '1337'}
+2023-01-25 12:55:03,881 INFO     discovered: {'CACHE-CONTROL': 'max-age=120', 'ST': 'urn:schemas-upnp-org:device:WANConnectionDevice:1', 'USN': 'uuid:67d10bb0-9729-4a3f-8bb6-c2491237430c::urn:schemas-upnp-org:device:WANConnectionDevice:1', 'EXT': '', 'SERVER': 'TP-Link/TP-LINK UPnP/1.1 MiniUPnPd/1.8', 'LOCATION': 'http://192.168.0.1:1900/ejbqw/rootDesc.xml', 'OPT': '"http://schemas.upnp.org/upnp/1/0/"; ns=01', '01-NLS': '1', 'BOOTID.UPNP.ORG': '1', 'CONFIGID.UPNP.ORG': '1337'}
+2023-01-25 12:55:03,881 INFO     discovered: {'CACHE-CONTROL': 'max-age=120', 'ST': 'urn:schemas-upnp-org:device:WANDevice:1', 'USN': 'uuid:67d10bb0-9729-4a3f-8bb6-c2491237430c::urn:schemas-upnp-org:device:WANDevice:1', 'EXT': '', 'SERVER': 'TP-Link/TP-LINK UPnP/1.1 MiniUPnPd/1.8', 'LOCATION': 'http://192.168.0.1:1900/ejbqw/rootDesc.xml', 'OPT': '"http://schemas.upnp.org/upnp/1/0/"; ns=01', '01-NLS': '1', 'BOOTID.UPNP.ORG': '1', 'CONFIGID.UPNP.ORG': '1337'}
+2023-01-25 12:55:03,881 INFO     discovered: {'CACHE-CONTROL': 'max-age=120', 'ST': 'urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1', 'USN': 'uuid:67d10bb0-9729-4a3f-8bb6-c2491237430c::urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1', 'EXT': '', 'SERVER': 'TP-Link/TP-LINK UPnP/1.1 MiniUPnPd/1.8', 'LOCATION': 'http://192.168.0.1:1900/ejbqw/rootDesc.xml', 'OPT': '"http://schemas.upnp.org/upnp/1/0/"; ns=01', '01-NLS': '1', 'BOOTID.UPNP.ORG': '1', 'CONFIGID.UPNP.ORG': '1337'}
+2023-01-25 12:55:03,882 INFO     discovered: {'CACHE-CONTROL': 'max-age=120', 'ST': 'urn:schemas-upnp-org:service:WANIPConnection:1', 'USN': 'uuid:67d10bb0-9729-4a3f-8bb6-c2491237430c::urn:schemas-upnp-org:service:WANIPConnection:1', 'EXT': '', 'SERVER': 'TP-Link/TP-LINK UPnP/1.1 MiniUPnPd/1.8', 'LOCATION': 'http://192.168.0.1:1900/ejbqw/rootDesc.xml', 'OPT': '"http://schemas.upnp.org/upnp/1/0/"; ns=01', '01-NLS': '1', 'BOOTID.UPNP.ORG': '1', 'CONFIGID.UPNP.ORG': '1337'}
+2023-01-25 12:55:03,882 INFO     discovered: {'CACHE-CONTROL': 'max-age=120', 'ST': 'urn:schemas-upnp-org:service:WANPPPConnection:1', 'USN': 'uuid:67d10bb0-9729-4a3f-8bb6-c2491237430c::urn:schemas-upnp-org:service:WANPPPConnection:1', 'EXT': '', 'SERVER': 'TP-Link/TP-LINK UPnP/1.1 MiniUPnPd/1.8', 'LOCATION': 'http://192.168.0.1:1900/ejbqw/rootDesc.xml', 'OPT': '"http://schemas.upnp.org/upnp/1/0/"; ns=01', '01-NLS': '1', 'BOOTID.UPNP.ORG': '1', 'CONFIGID.UPNP.ORG': '1337'}
+2023-01-25 12:55:03,882 INFO     discovered: {'CACHE-CONTROL': 'max-age=120', 'ST': 'urn:schemas-upnp-org:service:Layer3Forwarding:1', 'USN': 'uuid:67d10bb0-9729-4a3f-8bb6-c2491237430c::urn:schemas-upnp-org:service:Layer3Forwarding:1', 'EXT': '', 'SERVER': 'TP-Link/TP-LINK UPnP/1.1 MiniUPnPd/1.8', 'LOCATION': 'http://192.168.0.1:1900/ejbqw/rootDesc.xml', 'OPT': '"http://schemas.upnp.org/upnp/1/0/"; ns=01', '01-NLS': '1', 'BOOTID.UPNP.ORG': '1', 'CONFIGID.UPNP.ORG': '1337'}
+2023-01-25 12:55:03,883 INFO     discovered: {'CACHE-CONTROL': 'max-age=120', 'ST': 'uuid:67d10bb0-9729-4a3f-8bb6-c2491237430c', 'USN': 'uuid:67d10bb0-9729-4a3f-8bb6-c2491237430c', 'EXT': '', 'SERVER': 'TP-Link/TP-LINK UPnP/1.1 MiniUPnPd/1.8', 'LOCATION': 'http://192.168.0.1:1900/ejbqw/rootDesc.xml', 'OPT': '"http://schemas.upnp.org/upnp/1/0/"; ns=01', '01-NLS': '1', 'BOOTID.UPNP.ORG': '1', 'CONFIGID.UPNP.ORG': '1337'}
+2023-01-25 12:55:17,069 INFO     discovered: {'Cache-Control': 'max-age=3600', 'ST': 'upnp:rootdevice', 'USN': 'uuid:28000000-0000-1000-8008-44d878c2f084::upnp:rootdevice', 'Ext': '', 'Server': 'Roku/11.5.0 UPnP/1.0 Roku/11.5.0', 'LOCATION': 'http://192.168.0.172:8060/', 'WAKEUP': 'MAC=cc:a1:2b:6a:c5:cf;Timeout=10'}
+2023-01-25 12:55:17,070 INFO     discovered: {'Cache-Control': 'max-age=3600', 'ST': 'roku:ecp', 'USN': 'uuid:roku:ecp:X000008HLY9X', 'Ext': '', 'Server': 'Roku/11.5.0 UPnP/1.0 Roku/11.5.0', 'LOCATION': 'http://192.168.0.172:8060/', 'device-group.roku.com': '016D31572B73AFE542A4', 'WAKEUP': 'MAC=cc:a1:2b:6a:c5:cf;Timeout=10'}
+2023-01-25 12:55:17,070 INFO     discovered: {'Cache-Control': 'max-age=3600', 'ST': 'urn:dial-multiscreen-org:service:dial:1', 'USN': 'uuid:28000000-0000-1000-8008-44d878c2f084::urn:dial-multiscreen-org:service:dial:1', 'Ext': '', 'Server': 'Roku/11.5.0 UPnP/1.0 Roku/11.5.0', 'LOCATION': 'http://192.168.0.172:8060/dial/dd.xml', 'WAKEUP': 'MAC=cc:a1:2b:6a:c5:cf;Timeout=10'}
+2023-01-25 12:55:32,161 INFO     discovered: {'Cache-Control': 'max-age=3600', 'ST': 'upnp:rootdevice', 'USN': 'uuid:296c0018-500b-1099-8029-64e0030354d9::upnp:rootdevice', 'Ext': '', 'Server': 'Roku/11.5.0 UPnP/1.0 Roku/11.5.0', 'LOCATION': 'http://192.168.0.103:8060/', 'WAKEUP': 'MAC=64:e0:03:03:54:d9;Timeout=10'}
+2023-01-25 12:55:32,162 INFO     discovered: {'Cache-Control': 'max-age=3600', 'ST': 'roku:ecp', 'USN': 'uuid:roku:ecp:YK00HD760105', 'Ext': '', 'Server': 'Roku/11.5.0 UPnP/1.0 Roku/11.5.0', 'LOCATION': 'http://192.168.0.103:8060/', 'device-group.roku.com': '016D31572B73AFE542A4', 'WAKEUP': 'MAC=64:e0:03:03:54:d9;Timeout=10'}
+2023-01-25 12:55:32,162 INFO     discovered: {'Cache-Control': 'max-age=3600', 'ST': 'urn:dial-multiscreen-org:service:dial:1', 'USN': 'uuid:296c0018-500b-1099-8029-64e0030354d9::urn:dial-multiscreen-org:service:dial:1', 'Ext': '', 'Server': 'Roku/11.5.0 UPnP/1.0 Roku/11.5.0', 'LOCATION': 'http://192.168.0.103:8060/dial/dd.xml', 'WAKEUP': 'MAC=64:e0:03:03:54:d9;Timeout=10'}
+2023-01-25 12:56:03,910 INFO     stopping discovery thread
+~~~
+
 To build the application:
 ```
 python -m build
@@ -65,20 +88,24 @@ The user interface has keyboard support, so you can type in search fields etc. O
 | Return       	| Select        	|
 
 # Channel Ribbon
-The channel ribbon contains images for each known channel. To select a channel to be displayed on the Roku, select it by clickig the mouse. The ribbon scrolls horizontally. I determined these by brute force requesting from my roku devices using a bash script:
+The channel ribbon contains images for each known channel. To select a channel to be displayed on the Roku, select it by clickig the mouse. The ribbon scrolls horizontally. I determined these by brute force requesting from my roku devices using a bash [script](./scripts/find_channels_by_brute_force.sh):
 ~~~
 #!/bin/bash
+mkdir temp
 for i in {0..1000000}
 do
-    wget -q http://<ipaddress>:8060/query/icon/$i -O chan$i.jpeg
+    wget -q http://192.168.0.103:8060/query/icon/$i -O temp/chan$i.jpeg
     if [ $(expr $i % 1000) == "0" ]
     then
         echo $i
-        find . -size 0 -exec rm {} \;
+        find temp/ -size 0 -exec rm {} \;
+        find temp/ ! -size 0 -print
     fi
 done
+find temp/ -size 0 -exec rm {} \;
 ~~~
 The channel ribbon is created with the src/roku_remote/images/\*.jpeg files. You can remove chan\<id\>.jpeg images from the src/roku_remote/images/ folder that you don't want and they will no longer appear in the ribbon when it gets created.
+See my example [script](./scripts/remove_unwanted_channels.sh) to do that.
 Similarly, you can add your own chan\<id\>.jpeg image for a channel that you are aware of.
 Here's a table of all the channel ids I know:
 | Channel ID 	| Name    | Image  |

@@ -1,0 +1,37 @@
+#!/bin/bash
+roku_remote=$(find ~/.pyenv -type d -name "*roku_remote")
+rm ${roku_remote}/images/chan15985.jpeg 
+rm ${roku_remote}/images/chan22297.jpeg 
+rm ${roku_remote}/images/chan31012.jpeg 
+rm ${roku_remote}/images/chan43508.jpeg 
+rm ${roku_remote}/images/chan43735.jpeg 
+rm ${roku_remote}/images/chan54383.jpeg 
+rm ${roku_remote}/images/chan55545.jpeg 
+rm ${roku_remote}/images/chan58484.jpeg 
+rm ${roku_remote}/images/chan72916.jpeg 
+rm ${roku_remote}/images/chan98832.jpeg 
+rm ${roku_remote}/images/chan109022.jpeg 
+rm ${roku_remote}/images/chan130644.jpeg 
+rm ${roku_remote}/images/chan155883.jpeg 
+rm ${roku_remote}/images/chan194485.jpeg 
+rm ${roku_remote}/images/chan250045.jpeg 
+rm ${roku_remote}/images/chan260537.jpeg 
+rm ${roku_remote}/images/chan262399.jpeg
+rm ${roku_remote}/images/chan265831.jpeg 
+rm ${roku_remote}/images/chan272343.jpeg 
+rm ${roku_remote}/images/chan278897.jpeg 
+rm ${roku_remote}/images/chan291685.jpeg 
+rm ${roku_remote}/images/chan295059.jpeg 
+rm ${roku_remote}/images/chan557456.jpeg 
+rm ${roku_remote}/images/chan594971.jpeg 
+rm ${roku_remote}/images/chan596080.jpeg 
+rm ${roku_remote}/images/chan600835.jpeg 
+rm ${roku_remote}/images/chan611444.jpeg 
+rm ${roku_remote}/images/chan611688.jpeg 
+rm ${roku_remote}/images/chan631123.jpeg 
+rm ${roku_remote}/images/chan631467.jpeg 
+rm ${roku_remote}/images/chan633458.jpeg 
+rm ${roku_remote}/images/chan639619.jpeg 
+rm ${roku_remote}/images/chan659410.jpeg 
+rm ${roku_remote}/images/chan562859.jpeg 
+rm ${roku_remote}/images/chan680626.jpeg 
