@@ -94,11 +94,12 @@ def _discover(search_target, client_callback, force, timeout):
     if SSDP_ProtocolHandler.callback is not None and force == False:
         logger.info("discovery already in progress")
         return
-
-    logger.info("discovery thread running")
+    
+    ip_address = get_ip()
+    logger.info(f"discovery thread running, ip address is {ip_address}")
     SSDP_ProtocolHandler.callback = client_callback
     loop = asyncio.new_event_loop()
-    connect = loop.create_datagram_endpoint(SSDP_ProtocolHandler, local_addr=(get_ip(), None), family=socket.AF_INET)
+    connect = loop.create_datagram_endpoint(SSDP_ProtocolHandler, local_addr=(ip_address, None), family=socket.AF_INET)
     transport, protocol = loop.run_until_complete(connect)
 
     logger.debug("sending SSDP request")
