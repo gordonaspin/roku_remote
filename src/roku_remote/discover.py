@@ -68,6 +68,20 @@ class SSDP_ProtocolHandler(ssdp.SimpleServiceDiscoveryProtocol):
         print()
 """
 
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.settimeout(0)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.254.254.254', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+print(get_ip())
+
 def discover(search_target, client_callback, force=False, timeout=60):
     """Start the discovery thread"""
     logger.debug(f"discover({search_target}, {client_callback}, {force}, {timeout})")
@@ -85,7 +99,7 @@ def _discover(search_target, client_callback, force, timeout):
     logger.info("discovery thread running")
     SSDP_ProtocolHandler.callback = client_callback
     loop = asyncio.new_event_loop()
-    connect = loop.create_datagram_endpoint(SSDP_ProtocolHandler, family=socket.AF_INET)
+    connect = loop.create_datagram_endpoint(SSDP_ProtocolHandler, local_addr=(get_ip(), None), family=socket.AF_INET)
     transport, protocol = loop.run_until_complete(connect)
 
     logger.debug("sending SSDP request")
