@@ -80,7 +80,6 @@ def get_ip():
     finally:
         s.close()
     return IP
-print(get_ip())
 
 def discover(search_target, client_callback, force=False, timeout=60):
     """Start the discovery thread"""
