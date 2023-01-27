@@ -21,7 +21,7 @@ def test_main(caplog):
         assert log_record.levelno != logging.DEBUG
         assert log_record.levelno != logging.ERROR
         assert log_record.levelno != logging.CRITICAL
-        if "discovered:" in log_record.message:
+        if "discovered:" in log_record.message and "roku:ecp" in log_record.message:
             discovered = True
     assert discovered
     assert "stopping discovery thread" in caplog.records[len(caplog.records) - 1].message
