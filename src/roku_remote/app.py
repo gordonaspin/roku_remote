@@ -181,22 +181,24 @@ class App:
     def _create_widgets(self):
         """creates all the UI widgets"""
         # Combobox
+        if False:
+            self.window.option_add("*TCombobox*Listbox.background", App.bgcolor)
+            self.window.option_add("*TCombobox*Listbox.foreground", 'white')
+            self.window.option_add("*TCombobox*Listbox.selectBackground", App.bgcolor)
+            self.window.option_add("*TCombobox*Listbox.selectForeground", 'white')
 
-        self.window.option_add("*TCombobox*Listbox.background", App.bgcolor)
-        self.window.option_add("*TCombobox*Listbox.foreground", 'white')
-        self.window.option_add("*TCombobox*Listbox.selectBackground", App.bgcolor)
-        self.window.option_add("*TCombobox*Listbox.selectForeground", 'white')
+        if False:
+            style = ttk.Style()
+            style.configure("TCombobox", arrowcolor='white', background=App.bgcolor, foreground='black', fieldbackground=App.bgcolor, selectbackground=App.bgcolor, selectforeground="black")
 
-        style = ttk.Style()
-        style.configure("TCombobox", arrowcolor='white', background=App.bgcolor, foreground='white', fieldbackground=App.bgcolor, selectbackground=App.bgcolor, selectforeground="white")
-        if True:
+        if False:
             for state in ['readonly', 'disabled', 'active', 'focus', 'invalid', 'pressed', 'selected']:
                 style.map('TCombobox', arrowcolor=[(state, 'white')])
                 style.map('TCombobox', background=[(state, App.bgcolor)])
-                style.map('TCombobox', foreground=[(state, 'white')])
+                style.map('TCombobox', foreground=[(state, 'black')])
                 style.map('TCombobox', fieldbackground=[(state, App.bgcolor)])
                 style.map('TCombobox', selectbackground=[(state, App.bgcolor)])
-                style.map('TCombobox', selectforeground=[(state, 'white')])
+                style.map('TCombobox', selectforeground=[(state, 'black')])
 
         self.device_combobox = ttk.Combobox(state="readonly")
         balloon = Pmw.Balloon(self.device_combobox)

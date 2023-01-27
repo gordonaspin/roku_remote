@@ -1,13 +1,21 @@
 #!/bin/bash
 ROKU_DEV_TARGET=192.168.0.103
 folder=temp
-end=1000000
+end=2000000
+latest=""
 if [ "$1" != "" ]
 then
     folder=$1
 fi
+if [ "$2" != "" ]
+then
+    latest="$2"
+fi
 mkdir -p $folder
-latest=$(ls -t ${folder}/ | head -1 | grep -Eo "[0-9]*")
+if [ "$latest" == "" ]
+then
+    latest=$(ls -t ${folder}/ | head -1 | grep -Eo "[0-9]*")
+fi
 start=$((latest))
 echo start is $start
 for (( i=${start}; i<=${end}; i++ ))
