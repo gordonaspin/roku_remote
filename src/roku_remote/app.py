@@ -208,7 +208,7 @@ class App:
 
         # Buttons: each button is a clickable image with alpha-channel laying on a canvas
         self.power_btn          = App.PowerButton(self, self.window, "power", f"{self.image_path}/power_red.png", lambda event: self.btn_clicked(self.power_button), 50, 50, f"{self.image_path}/power_green.png")
-        self.discover_btn       = App.Button(self, self.window, "discover", f"{self.image_path}/discover.png", lambda event: self.discover(False, True), 50, 50)
+        self.discover_btn       = App.Button(self, self.window, "discover", f"{self.image_path}/discover.png", lambda event: self.discover(True, True), 50, 50)
 
         self.back_btn           = App.Button(self, self.window, "back", f"{self.image_path}/back.png", lambda event: self.btn_clicked(self.roku.send_key_back), 75, 50)
         self.guide_btn          = App.Button(self, self.window, "guide", f"{self.image_path}/guide.png", lambda event: self.btn_clicked(self.roku.send_key_guide), 75, 50)
