@@ -33,7 +33,7 @@ def main(timeout, log_level):
     logger.info(f"looking for roku devices on network for {timeout} seconds ...")
 
     root = tk.Tk()
-    app = App(root)
+    app = App(root, timeout)
     discover("roku:ecp", app.register_device, force=False, timeout=timeout)
     root.mainloop()
 

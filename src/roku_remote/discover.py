@@ -83,11 +83,11 @@ def get_ip():
 def discover(search_target, client_callback, force=False, timeout=60):
     """Start the discovery thread"""
     logger.debug(f"discover({search_target}, {client_callback}, {force}, {timeout})")
-    ssdp_thread = Thread(target=_discover, args=(search_target, client_callback, force, timeout), daemon=True)
+    ssdp_thread = Thread(target=discover_thread, args=(search_target, client_callback, force, timeout), daemon=True)
     ssdp_thread.start()
     return ssdp_thread
 
-def _discover(search_target, client_callback, force, timeout):
+def discover_thread(search_target, client_callback, force, timeout):
     """sends the SSDP request packet on the network and waits for responses"""
     # Start the asyncio loop.
     if SSDP_ProtocolHandler.callback is not None and force == False:
@@ -115,6 +115,9 @@ def _discover(search_target, client_callback, force, timeout):
             #"ST": "roku:ecp",
         },
     )
+    sock = transport.get_extra_info('socket')
+    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 4)
+
     search_request.sendto(transport, (SSDP_ProtocolHandler.MULTICAST_ADDRESS, SSDP_PORT))
 
     # Keep on running for timeout seconds.

@@ -25,11 +25,12 @@ class App:
     POWER_UPDATE_INTERVAL = 10*1000
     activebgcolor = bgcolor
 
-    def __init__(self, window):
+    def __init__(self, window, timeout):
         """creates the main window object, creates widgets, arranges to grid and wires
         up the combobox selection and roku registration events"""
         self.image_path = files(roku_remote.images)
         self.window = window
+        self.timeout = timeout
         Pmw.initialise(window)
         self.title = self.window.title("Roku Remote")
         self.window.configure(bg=self.bgcolor)
@@ -121,7 +122,7 @@ class App:
             self.roku = None
             self.reset_combobox()
             self._disable_widgets()
-        discover("roku:ecp", self.register_device, force) 
+        discover("roku:ecp", self.register_device, force, timeout=self.timeout) 
         if user_action == False:
             self.window.after(App.DISCOVER_INTERVAL, self.discover)
 
