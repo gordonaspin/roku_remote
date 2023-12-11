@@ -114,9 +114,9 @@ def discover_thread(search_target, client_callback, force, timeout):
             #"ST": "ssdp:all",
             #"ST": "roku:ecp",
         },
-    )
+    )   
     sock = transport.get_extra_info('socket')
-    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 4)
+    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, timeout)
 
     search_request.sendto(transport, (SSDP_ProtocolHandler.MULTICAST_ADDRESS, SSDP_PORT))
 
