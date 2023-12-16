@@ -10,7 +10,7 @@ from roku_remote.discover import discover
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 @click.command(context_settings=CONTEXT_SETTINGS, options_metavar="<options>")
-@click.option("--log-level", help="Log level (default: debug)", type=click.Choice(["debug", "info", "error"]), default="error")
+@click.option("--log-level", help="Log level (default: error)", type=click.Choice(["debug", "info", "error"]), default="error")
 @click.option("--timeout", help="length of time in seconds to keep listening for devices, default 60s", type=click.INT, default=60)
 
 def main(timeout, log_level):
