@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import tkinter as tk
+from tkinter import scrolledtext
 import tkinter.ttk as ttk
 from fnmatch import fnmatch
 from queue import Queue
@@ -23,6 +24,7 @@ class App:
     troughcolor = "#662d91"
     DISCOVER_INTERVAL = 5*60*1000
     POWER_UPDATE_INTERVAL = 10*1000
+    DISCOVER_BUTTON_FLASH_INTERVAL = 500
     activebgcolor = bgcolor
 
     def __init__(self, window, timeout):
@@ -40,6 +42,7 @@ class App:
         self.registration_queue = Queue()
         self.rokus = []
         self.roku = None
+        self.discover_thread = None
 
         self._create_widgets()
         self._layout_widgets()
@@ -47,6 +50,8 @@ class App:
 
         self.window.bind(self.REGSITER_ROKU_EVENT, self.register_roku)
         self.window.after(App.DISCOVER_INTERVAL, self.discover)
+        self.window.after(App.DISCOVER_BUTTON_FLASH_INTERVAL, self.flash_discover_button)
+
         self.window.bind('<KeyPress>', self.on_key_press)
         self.device_combobox.bind(self.COMBOBOX_SELECTED_EVENT, self.device_selection_changed)
         self.input_combobox.bind(self.COMBOBOX_SELECTED_EVENT, self.input_selection_changed)
@@ -55,6 +60,17 @@ class App:
         logger.debug(f"on_key_press code:{event.keycode}: code.hex:{event.keycode:02x} char:{event.char}")
         if self.roku:
             self.roku.send_char(event.char, event.keysym)
+            if event.keycode == 67:         # <F1> key
+                child = tk.Toplevel(self.window)
+                child.resizable(height=True, width=False)
+                child.title(self.roku.get_name())
+                child.rowconfigure(0, weight=1)
+                child.columnconfigure(0, weight=1)
+                text_area = scrolledtext.ScrolledText(child, font=('Helvetica 12'))
+                text_area.insert(tk.INSERT, self.roku.get_full_device_info())
+                text_area.grid(column=0, row=0, sticky=tk.NSEW)
+                text_area.config(state="disabled") 
+
 
     def register_roku(self, event):
         """called by the Tk.mainloop when a REGISTER_ROKU_EVENT has been posted from the discovery thread
@@ -91,6 +107,15 @@ class App:
         self.registration_queue.put(Roku(dict))
         self.window.event_generate(self.REGSITER_ROKU_EVENT)
 
+    def flash_discover_button(self):
+        if self.discover_thread.is_alive():
+            #logger.debug("flashing discover button")
+            self.discover_btn.onoff(False)
+        else:
+            self.discover_btn.onoff(True)
+        self.window.after(App.DISCOVER_BUTTON_FLASH_INTERVAL, self.flash_discover_button)
+
+
     def update_power_button_state(self, user_action=False):
         """called every App.POWER_UPDATE_INTERVAL seconds from the Tk.mainloop
         to check power state of device and update power button image.
@@ -113,16 +138,24 @@ class App:
         self.roku.send_key_power()
         self.update_power_button_state(True)
 
+    def set_discover_thread(self, ssdp_thread):
+        self.discover_thread = ssdp_thread
+
     def discover(self, force=False, user_action=False):
         """starts a discovery thread when the user clicks the discover button or upon
         an exception getting power button state """
+        if self.discover_thread.is_alive():
+            logger.debug("discover thread already running")
+            return
+        
         logger.debug(f"discover(force={force}, user_action={user_action})")
         if force:
             self.rokus.clear()
             self.roku = None
             self.reset_combobox()
             self._disable_widgets()
-        discover("roku:ecp", self.register_device, force, timeout=self.timeout) 
+        self.discover_thread = discover("roku:ecp", self.register_device, force, timeout=self.timeout)
+        self.discover_thread.start()
         if user_action == False:
             self.window.after(App.DISCOVER_INTERVAL, self.discover)
 
@@ -237,7 +270,7 @@ class App:
 
         self.input_combobox = ttk.Combobox(state="readonly", width=5)
         balloon = Pmw.Balloon(self.input_combobox)
-        balloon.bind(self.device_combobox, "select input")
+        balloon.bind(self.input_combobox, "select input")
         balloon.configure(relmouse="both")
         self.input_combobox['values'] = ("input","HDMI-1","HDMI-2","HDMI-3","HDMI-4","Tuner","AV-1")
         self.input_combobox.current(0)
@@ -320,8 +353,11 @@ class App:
         def __init__(self, app, window, name, image_path, onclick, x, y, alt_image_path=None):
             self.app = app
             self.name = name
+            self.on = True
+            self.onclick = onclick
             self.canvas = tk.Canvas(window, width=x, height=y, bd=0, borderwidth=0, highlightthickness=0, bg=App.bgcolor)
-            self.img = ImageTk.PhotoImage(Image.open(image_path).resize((x,y)))
+            self.tkimage = Image.open(image_path).resize((x,y))
+            self.img = ImageTk.PhotoImage(self.tkimage)
             if alt_image_path is not None:
                 self.alt_img = ImageTk.PhotoImage(Image.open(alt_image_path).resize((x,y)))
             self.btn_img = self.canvas.create_image(self.canvas.winfo_reqwidth()/2, self.canvas.winfo_reqheight()/2, anchor=tk.CENTER, image=self.img)
@@ -329,13 +365,30 @@ class App:
                 balloon = Pmw.Balloon(self.canvas)
                 balloon.bind(self.canvas, name)
                 balloon.configure(relmouse="both")
-            if onclick is not None:
-                self.onclick = onclick
+            self.set_clickable()
+
+        def set_clickable(self):
+            if self.onclick is not None:
                 self.canvas.tag_bind(self.btn_img, "<Button-1>", self.onclick)
             else:
-                if name is not None:
+                if self.name is not None:
                     self.canvas.tag_bind(self.btn_img, "<Button-1>", self.btn_clicked)
-        
+
+        def onoff(self, set_on):
+            if self.on == True:
+                self.on = False
+                self.canvas.delete(self.btn_img)
+            #self.tkimage = self.tkimage.rotate(-5)
+            #self.img = ImageTk.PhotoImage(self.tkimage)
+            else:
+                self.on = True
+                self.btn_img = self.canvas.create_image(self.canvas.winfo_reqwidth()/2, self.canvas.winfo_reqheight()/2, anchor=tk.CENTER, image=self.img)
+
+            if set_on == True and self.on == False:
+                self.on = True
+                self.btn_img = self.canvas.create_image(self.canvas.winfo_reqwidth()/2, self.canvas.winfo_reqheight()/2, anchor=tk.CENTER, image=self.img)
+                self.set_clickable()
+
         def btn_clicked(self, ev):
             logger.debug(f"Button.btn_clicked {self.name}")
             self.app.roku.send_launch_channel(self.name)

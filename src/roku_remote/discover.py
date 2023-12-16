@@ -30,7 +30,9 @@ def main(scope, timeout, log_level):
 
     logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=level)
     logger.info("discovering ...")
-    discover(scope, SSDP_ProtocolHandler.default_client_callback, False, timeout).join()
+    ssdp_thread = discover(scope, SSDP_ProtocolHandler.default_client_callback, False, timeout)
+    ssdp_thread.start()
+    ssdp_thread.join()
 
 class SSDP_ProtocolHandler(ssdp.SimpleServiceDiscoveryProtocol):
     """Protocol to handle responses and requests."""
@@ -84,7 +86,6 @@ def discover(search_target, client_callback, force=False, timeout=60):
     """Start the discovery thread"""
     logger.debug(f"discover({search_target}, {client_callback}, {force}, {timeout})")
     ssdp_thread = Thread(target=discover_thread, args=(search_target, client_callback, force, timeout), daemon=True)
-    ssdp_thread.start()
     return ssdp_thread
 
 def discover_thread(search_target, client_callback, force, timeout):

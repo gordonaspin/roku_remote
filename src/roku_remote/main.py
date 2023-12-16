@@ -34,7 +34,9 @@ def main(timeout, log_level):
 
     root = tk.Tk()
     app = App(root, timeout)
-    discover("roku:ecp", app.register_device, force=False, timeout=timeout)
+    ssdp_thread = discover("roku:ecp", app.register_device, force=False, timeout=timeout)
+    app.set_discover_thread(ssdp_thread)
+    ssdp_thread.start()
     root.mainloop()
 
 if __name__ == "__main__":

@@ -61,7 +61,6 @@ class Roku:
         response = requests.post(url)
         self.log_response("send_keydown", self.name, url, response.status_code, response.text)
 
-    keyup = "keyup"
     def send_keyup(self, key):
         url = self.api_url + "keyup/" + key
         response = requests.post(url)
@@ -235,6 +234,17 @@ class Roku:
                 logger.error(f"unknown error in get_device_info()")
         return self.device_info[key]
 
+    def get_full_device_info(self):
+        url = self.api_url + "query/device-info"
+        try:
+            response = requests.get(url)
+        except Exception as ex:
+            logger.error(f"exception {ex} in get_device_info({key})")
+            raise(ex)
+        except:
+            logger.error(f"unknown error in get_device_info()")
+        return response.text
+    
     def get_name(self):
         return self.name
 
